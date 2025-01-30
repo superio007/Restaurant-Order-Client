@@ -9,15 +9,33 @@ function Navbar() {
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center space-x-2">
             <Menu className="w-8 h-8 text-orange-600" />
-            <span className="text-2xl font-bold text-gray-800">QuickBite</span>
+            <img
+              src="src\assets\site-horizontal-v1.svg"
+              alt="site-horizontal-v1"
+              style={{width:"14rem"}}
+            />
           </Link>
           <div className="hidden md:flex space-x-8">
-            <Link to="/" className="text-gray-600 hover:text-orange-600">Home</Link>
-            <Link to="/restaurants" className="text-gray-600 hover:text-orange-600">Order Now</Link>
-            <Link to="/about" className="text-gray-600 hover:text-orange-600">About</Link>
-            <Link to="/contact" className="text-gray-600 hover:text-orange-600">Contact</Link>
+            <Link to="/" className="text-gray-600 hover:text-orange-600">
+              Home
+            </Link>
+            <Link
+              to="/restaurants"
+              className="text-gray-600 hover:text-orange-600"
+            >
+              Order Now
+            </Link>
+            <Link to="/about" className="text-gray-600 hover:text-orange-600">
+              About
+            </Link>
+            <Link to="/contact" className="text-gray-600 hover:text-orange-600">
+              Contact
+            </Link>
           </div>
-          <Link to="/restaurants" className="bg-orange-600 text-white px-6 py-2 rounded-full hover:bg-orange-700 transition-colors">
+          <Link
+            to="/restaurants"
+            className="bg-orange-600 text-white px-md-6 py-md-2  px-1.5 py-1 rounded-full hover:bg-orange-700 transition-colors"
+          >
             Order Now
           </Link>
         </div>

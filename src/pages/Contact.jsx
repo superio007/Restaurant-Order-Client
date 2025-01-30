@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
-import mapImage from "../assests/mumbaiMap.png";
+import mapImage from "../assets/mumbaiMap.png";
 
 function Contact() {
   const [formData, setFormData] = useState({
