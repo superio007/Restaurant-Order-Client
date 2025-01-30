@@ -7,6 +7,7 @@ import Restaurants from "./pages/Restaurants";
 import RestaurantMenu from "./pages/RestaurantMenu";
 import Contact from "./pages/Contact";
 import About from "./pages/AboutUs";
+import NotFound from "./pages/NotFound";
 const restaurants = [
   {
     id: 1,
@@ -53,6 +54,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/restaurants/:id" element={<RestaurantMenu />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </div>
