@@ -1,190 +1,12 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Star, Clock, MinusCircle, PlusCircle } from 'lucide-react';
-
-// Mock data for restaurant details and menu
-const restaurantData = [
-  {
-    id: 1,
-    name: "The Gourmet Kitchen",
-    cuisine: "Contemporary",
-    rating: 4.8,
-    image:
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
-    description:
-      "Indulge in the art of fine dining with our contemporary creations, blending global flavors with locally sourced ingredients for a truly elevated experience.",
-    menu: {
-      Starters: [
-        {
-          id: 1,
-          name: "Avocado Bruschetta",
-          price: 13.99,
-          description:
-            "Crispy sourdough topped with smashed avocado, feta, and balsamic glaze",
-        },
-        {
-          id: 2,
-          name: "Pumpkin Soup",
-          price: 9.99,
-          description:
-            "Roasted pumpkin blended with coconut cream and a hint of nutmeg",
-        },
-      ],
-      "Main Course": [
-        {
-          id: 3,
-          name: "Herb-Crusted Lamb",
-          price: 32.99,
-          description:
-            "Juicy lamb chops coated with fresh herbs, served with roasted root vegetables",
-        },
-        {
-          id: 4,
-          name: "Stuffed Bell Peppers",
-          price: 24.99,
-          description:
-            "Bell peppers filled with quinoa, chickpeas, and sundried tomatoes",
-        },
-      ],
-      Desserts: [
-        {
-          id: 5,
-          name: "Matcha Cheesecake",
-          price: 12.99,
-          description:
-            "Creamy cheesecake infused with premium matcha and a graham cracker crust",
-        },
-        {
-          id: 6,
-          name: "Honey Panna Cotta",
-          price: 10.99,
-          description:
-            "Silky panna cotta with a drizzle of wildflower honey and fresh berries",
-        },
-      ],
-    },
-  },
-  {
-    id: 2,
-    name: "Pasta Paradise",
-    cuisine: "Italian",
-    rating: 4.6,
-    image:
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
-    description:
-      "Step into a haven for pasta lovers, where authentic Italian recipes meet the finest ingredients for a taste of Italy in every bite.",
-    menu: {
-      Starters: [
-        {
-          id: 1,
-          name: "Caprese Salad",
-          price: 10.99,
-          description:
-            "Fresh mozzarella, vine-ripened tomatoes, and basil drizzled with olive oil",
-        },
-        {
-          id: 2,
-          name: "Garlic Bread with Cheese",
-          price: 7.99,
-          description:
-            "Classic Italian bread topped with garlic butter and melted mozzarella",
-        },
-      ],
-      "Main Course": [
-        {
-          id: 3,
-          name: "Fettuccine Alfredo",
-          price: 19.99,
-          description:
-            "Rich and creamy Alfredo sauce tossed with fettuccine pasta",
-        },
-        {
-          id: 4,
-          name: "Margherita Pizza",
-          price: 18.99,
-          description:
-            "Thin crust pizza topped with tomato sauce, fresh mozzarella, and basil",
-        },
-      ],
-      Desserts: [
-        {
-          id: 5,
-          name: "Tiramisu",
-          price: 9.99,
-          description:
-            "Layers of espresso-soaked ladyfingers and mascarpone cream dusted with cocoa",
-        },
-        {
-          id: 6,
-          name: "Cannoli",
-          price: 8.99,
-          description:
-            "Crispy pastry shells filled with sweet ricotta and chocolate chips",
-        },
-      ],
-    },
-  },
-  {
-    id: 3,
-    name: "Sushi Master",
-    cuisine: "Japanese",
-    rating: 4.9,
-    image:
-      "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=800&q=80",
-    description:
-      "Embark on a culinary journey to Japan with our expertly crafted sushi and traditional Japanese dishes, made with the freshest ingredients.",
-    menu: {
-      Starters: [
-        {
-          id: 1,
-          name: "Edamame",
-          price: 6.99,
-          description:
-            "Steamed soybeans lightly salted for a perfect appetizer",
-        },
-        {
-          id: 2,
-          name: "Miso Soup",
-          price: 5.99,
-          description:
-            "Traditional Japanese soup with tofu, seaweed, and scallions",
-        },
-      ],
-      "Main Course": [
-        {
-          id: 3,
-          name: "Sashimi Platter",
-          price: 29.99,
-          description:
-            "An assortment of fresh tuna, salmon, and yellowtail sashimi",
-        },
-        {
-          id: 4,
-          name: "Dragon Roll",
-          price: 22.99,
-          description:
-            "Eel, cucumber, and avocado topped with thinly sliced avocado and unagi sauce",
-        },
-      ],
-      Desserts: [
-        {
-          id: 5,
-          name: "Mochi Ice Cream",
-          price: 8.99,
-          description: "Soft and chewy rice cake filled with creamy ice cream",
-        },
-        {
-          id: 6,
-          name: "Matcha Roll Cake",
-          price: 9.99,
-          description:
-            "Light and fluffy sponge cake rolled with matcha-flavored cream",
-        },
-      ],
-    },
-  },
-];
-
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { Form, Button } from "react-bootstrap";
+import { useParams } from "react-router-dom";
+import { Star, Clock, MinusCircle, PlusCircle } from "lucide-react";
+// import Button from "react-bootstrap/Button";
+// import Form from "react-bootstrap/Form";
+import Modal from "react-bootstrap/Modal";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function MenuItem({ item, onAdd, onRemove, quantity }) {
   return (
@@ -219,13 +41,77 @@ function MenuItem({ item, onAdd, onRemove, quantity }) {
 }
 
 function RestaurantMenu() {
-  const { id } = useParams(); // Get the restaurant ID from the URL
-  const restaurant = restaurantData.find((r) => r.id === parseInt(id)); // Use restaurantData instead of restaurants
+  const { id } = useParams();
+  const [restaurantData, setRestaurantData] = useState(null);
+  const [menuItems, setMenuItems] = useState([]);
   const [cart, setCart] = useState({});
   const [tableNumber, setTableNumber] = useState("");
+  const [show, setShow] = useState(false);
 
-  if (!restaurant) {
-    return <p>Restaurant not found</p>;
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = (data) => {
+    console.log("Form Data:", data);
+    alert("Form submitted successfully!");
+  };
+
+  // Fetch Restaurant Data
+  useEffect(() => {
+    const fetchRestaurantData = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/restaurants/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch restaurant data");
+        const data = await res.json();
+        setRestaurantData(data.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchRestaurantData();
+  }, [id]);
+
+  // Fetch Menu Data
+  useEffect(() => {
+    const fetchMenuData = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/menu-items/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch menu items");
+        const data = await res.json();
+        setMenuItems(data.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchMenuData();
+  }, [id]);
+
+  // Categorize menu into sections
+  function categorizeMenu(items) {
+    const menu = {};
+    items.forEach((item) => {
+      const category = item.category || "Uncategorized";
+      if (!menu[category]) menu[category] = [];
+      menu[category].push({
+        id: item.id,
+        name: item.name,
+        price: parseFloat(item.price),
+        description: `Delicious ${item.name} served fresh!`,
+      });
+    });
+    return menu;
+  }
+
+  const menu = categorizeMenu(menuItems);
+
+  if (!restaurantData) {
+    return <p>Loading...</p>;
   }
 
   const addToCart = (item) => {
@@ -245,7 +131,7 @@ function RestaurantMenu() {
 
   const calculateTotal = () =>
     Object.entries(cart).reduce((total, [itemId, quantity]) => {
-      const item = Object.values(restaurant.menu)
+      const item = Object.values(menu)
         .flat()
         .find((menuItem) => menuItem.id === parseInt(itemId));
       return total + (item?.price || 0) * quantity;
@@ -256,17 +142,17 @@ function RestaurantMenu() {
       {/* Restaurant Header */}
       <div className="relative h-64 rounded-xl overflow-hidden mb-8">
         <img
-          src={restaurant.image}
-          alt={restaurant.name}
+          src={restaurantData.image}
+          alt={restaurantData.name}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-end">
           <div className="p-6 text-white">
-            <h1 className="text-3xl font-bold mb-2">{restaurant.name}</h1>
+            <h1 className="text-3xl font-bold mb-2">{restaurantData.name}</h1>
             <div className="flex items-center space-x-4">
               <div className="flex items-center">
                 <Star className="w-5 h-5 text-yellow-400 mr-1" />
-                <span>{restaurant.rating}</span>
+                <span>{restaurantData.rating}</span>
               </div>
               <div className="flex items-center">
                 <Clock className="w-5 h-5 mr-1" />
@@ -298,7 +184,7 @@ function RestaurantMenu() {
       {/* Menu Sections */}
       <div className="grid md:grid-cols-2 gap-8">
         <div className="space-y-8">
-          {Object.entries(restaurant.menu).map(([category, items]) => (
+          {Object.entries(menu).map(([category, items]) => (
             <div key={category}>
               <h2 className="text-2xl font-bold mb-4">{category}</h2>
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -315,7 +201,73 @@ function RestaurantMenu() {
             </div>
           ))}
         </div>
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Modal heading</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Group className="mb-3" controlId="formName">
+              <Form.Label>Full Name</Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                placeholder="Enter your full name"
+                {...register("name", { required: "Full name is required" })}
+              />
+              {errors.name && (
+                <p className="text-danger">{errors.name.message}</p>
+              )}
+            </Form.Group>
 
+            {/* Phone Number Field */}
+            <Form.Group className="mb-3" controlId="formPhone">
+              <Form.Label>Phone Number</Form.Label>
+              <Form.Control
+                type="tel"
+                name="phone"
+                placeholder="Enter your phone number"
+                {...register("phone", {
+                  required: "Phone number is required",
+                  pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: "Invalid phone number (10 digits required)",
+                  },
+                })}
+              />
+              {errors.phone && (
+                <p className="text-danger">{errors.phone.message}</p>
+              )}
+            </Form.Group>
+
+            {/* Email Field */}
+            <Form.Group className="mb-3" controlId="formEmail">
+              <Form.Label>Email Address</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                placeholder="name@example.com"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                    message: "Invalid email address",
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="text-danger">{errors.email.message}</p>
+              )}
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+            <Button variant="primary" onClick={handleClose}>
+              Save Changes
+            </Button>
+          </Modal.Footer>
+        </Modal>
         {/* Order Summary */}
         <div className="sticky top-8">
           <div className="bg-white rounded-lg shadow-md p-6">
@@ -323,7 +275,7 @@ function RestaurantMenu() {
             {Object.entries(cart)
               .filter(([_, quantity]) => quantity > 0)
               .map(([itemId, quantity]) => {
-                const item = Object.values(restaurant.menu)
+                const item = Object.values(menu)
                   .flat()
                   .find((menuItem) => menuItem.id === parseInt(itemId));
                 return (
@@ -346,6 +298,7 @@ function RestaurantMenu() {
               disabled={
                 !tableNumber || Object.values(cart).every((v) => v === 0)
               }
+              onClick={handleShow}
             >
               Place Order
             </button>
