@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm  } from "react-hook-form";
 import { Form, Button } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { Star, Clock, MinusCircle, PlusCircle } from "lucide-react";
-// import Button from "react-bootstrap/Button";
-// import Form from "react-bootstrap/Form";
+import Swal from "sweetalert2";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -15,7 +14,7 @@ function MenuItem({ item, onAdd, onRemove, quantity }) {
         <h3 className="text-lg font-semibold">{item.name}</h3>
         <p className="text-gray-600">{item.description}</p>
         <p className="text-orange-600 font-semibold mt-1">
-          ${item.price.toFixed(2)}
+          ₹{item.price.toFixed(2)}
         </p>
       </div>
       <div className="flex items-center space-x-2">
@@ -42,10 +41,12 @@ function MenuItem({ item, onAdd, onRemove, quantity }) {
 
 function RestaurantMenu() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const tableNo = searchParams.get("tableNo");
   const [restaurantData, setRestaurantData] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
   const [cart, setCart] = useState({});
-  const [tableNumber, setTableNumber] = useState("");
+  const [tableNumber, setTableNumber] = useState(tableNo || "");
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -54,12 +55,94 @@ function RestaurantMenu() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      name: "",
+      phone: "",
+      email: "",
+      notes: "Na", // Default value here
+    },
+  });
 
+  function processOrder(menu, order) {
+    const results = [];
+
+    // Loop through each order entry
+    for (const [id, quantity] of Object.entries(order)) {
+      // Find the corresponding menu item
+      const menuItem = menu.find((item) => item.id === parseInt(id));
+      if (menuItem) {
+        // Multiply the price (converted to number) by the quantity
+        const totalPrice = parseFloat(menuItem.price) * quantity;
+        results.push({
+          id: menuItem.id,
+          name: `${menuItem.name} x ${quantity}`,
+          totalPrice: totalPrice,
+        });
+      } else {
+        console.warn(`Item with id ${id} not found in the menu.`);
+      }
+    }
+
+    return results;
+  }
+  function getSpecificISODate() {
+    // Month is 0-indexed in JavaScript Date, so 2 represents March
+    const date = new Date(Date.UTC(2024, 2, 15, 9, 0, 0));
+    return date.toISOString();
+  }
+
+  // In your component, update your onSubmit function:
   const onSubmit = (data) => {
-    console.log("Form Data:", data);
-    alert("Form submitted successfully!");
+    let cartItems = processOrder(menuItems, cart);
+    let orderItems = [];
+    let totalPrice = 0;
+    cartItems.map((item) => {
+      orderItems.push(item.name);
+      totalPrice += item.totalPrice;
+    });
+    const orderCall = {
+      table_number: Number(tableNumber),
+      items: JSON.stringify(orderItems),
+      name: data.name,
+      total: Number(totalPrice).toFixed(2),
+      status: "pending",
+      time: getSpecificISODate(),
+      notes: data.notes,
+      restaurant_id: restaurantData.id,
+    };
+    // console.log(orderCall);
+    fetch("http://localhost:5000/api/orders-add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(orderCall),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        Swal.fire({
+          title: "Success!",
+          text: "Order placed successfully!",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+        console.log("Success:", data);
+      })
+      .catch((error) => {
+        Swal.fire({
+          title: "Error!",
+          text: "Something went wrong. Please try again.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+        console.error("Error:", error);
+      });
+    reset();
+    setCart({});
+    handleClose();
   };
 
   // Fetch Restaurant Data
@@ -91,7 +174,7 @@ function RestaurantMenu() {
     };
     fetchMenuData();
   }, [id]);
-
+console.log(menuItems);
   // Categorize menu into sections
   function categorizeMenu(items) {
     const menu = {};
@@ -218,7 +301,6 @@ function RestaurantMenu() {
                 <p className="text-danger">{errors.name.message}</p>
               )}
             </Form.Group>
-
             {/* Phone Number Field */}
             <Form.Group className="mb-3" controlId="formPhone">
               <Form.Label>Phone Number</Form.Label>
@@ -258,16 +340,34 @@ function RestaurantMenu() {
                 <p className="text-danger">{errors.email.message}</p>
               )}
             </Form.Group>
+            <Form.Group className="mb-3" controlId="formName">
+              <Form.Label>Notes</Form.Label>
+              <Form.Control
+                type="text"
+                name="notes" // Use consistent naming (all lowercase) for clarity
+                placeholder="Enter your Notes"
+                defaultValue="Na"
+                {...register("notes")}
+              />
+              {errors.Notes && (
+                <p className="text-danger">{errors.Notes.message}</p>
+              )}
+            </Form.Group>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
               Close
             </Button>
-            <Button variant="primary" onClick={handleClose}>
-              Save Changes
+            <Button
+              variant=""
+              style={{ backgroundColor: "#ea580c", color: "white" }}
+              onClick={handleSubmit(onSubmit)}
+            >
+              Place Order
             </Button>
           </Modal.Footer>
         </Modal>
+
         {/* Order Summary */}
         <div className="sticky top-8">
           <div className="bg-white rounded-lg shadow-md p-6">
@@ -283,14 +383,14 @@ function RestaurantMenu() {
                     <span>
                       {item.name} x {quantity}
                     </span>
-                    <span>${(item.price * quantity).toFixed(2)}</span>
+                    <span>₹{(item.price * quantity).toFixed(2)}</span>
                   </div>
                 );
               })}
             <div className="border-t mt-4 pt-4">
               <div className="flex justify-between font-bold">
                 <span>Total</span>
-                <span>${calculateTotal().toFixed(2)}</span>
+                <span>₹{calculateTotal().toFixed(2)}</span>
               </div>
             </div>
             <button
